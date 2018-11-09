@@ -2,6 +2,8 @@ import React  from 'react';
 import { Query } from 'react-apollo'
 import { gql } from 'apollo-boost'
 
+import './App.css'
+
 const ALL_LIFTS_QUERY = gql`
   query {
       allLifts {
@@ -23,23 +25,36 @@ const ALL_TRAILS_QUERY = gql`
     `
 
 const App = () =>
-<div>
-<section>
-<h1> LIFTS </h1>
-<Query query={ALL_LIFTS_QUERY}>
-  {({ loading, data }) => {
-  return <div>{!loading && data.allLifts.map(lift => <h3 key={lift.name}>{lift.name}</h3>)}</div>
-}}
-</Query>
-</section>
-<section>
-<h1> Trails </h1>
-<Query query={ALL_TRAILS_QUERY}>
-  {({ loading, data }) => {
-  return <div>{!loading && data.allTrails.map(trail => <h3 key={trail.name}>{trail.name}</h3>)}</div>
-}}
-</Query>
-</section>
-</div>
-
+  <div>
+  <table>
+    <thead>
+     <tr>
+       <th> LIFTS </th>
+     </tr>
+    </thead>
+    <tbody>
+      <Query query={ALL_LIFTS_QUERY}>
+        {({ loading, data }) => !loading && data.allLifts.map(lift => 
+        <tr key={lift.name}>
+          <td key={lift.name}>{lift.name}: {lift.status}</td>
+        </tr>)}
+      </Query>
+    </tbody>
+  </table>
+  <table>
+    <thead>
+      <tr>
+        <th> TRAILS </th>
+      </tr>
+      </thead>
+    <tbody>
+      <Query key="trails" query={ALL_TRAILS_QUERY}>
+        {({ loading, data }) => !loading && data.allTrails.map(trail => 
+        <tr key={trail.name}>
+          <td key={trail.name}>{trail.name}: {trail.status}</td>
+        </tr>)}
+      </Query>
+    </tbody>
+  </table>
+  </div>
 export default App
