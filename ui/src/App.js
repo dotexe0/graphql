@@ -6,23 +6,21 @@ import './App.css'
 
 const ALL_LIFTS_QUERY = gql`
   query {
-      allLifts {
-          id
-          name
-          status
-      }
-  }
-  `
+    allLifts {
+      name
+      status
+    }
+}
+`
 
 const ALL_TRAILS_QUERY = gql`
-    query {
-        allTrails {
-            id
-            name
-            status
-        }
+  query {
+    allTrails {
+      name
+      status
     }
-    `
+}
+`
 
 const App = () =>
   <div>
@@ -57,4 +55,5 @@ const App = () =>
     </tbody>
   </table>
   </div>
+
 export default App

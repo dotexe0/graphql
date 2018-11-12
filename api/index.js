@@ -1,11 +1,14 @@
-const { ApolloServer, PubSub } = require('apollo-server')
+const { ApolloServer, PubSub } = require('apollo-server-express')
+const { ApolloEngine } = require('apollo-engine')
+const express = require('express')
 
 const lifts = require('./data/lifts.json')
 const trails = require('./data/trails.json')
 
 const pubsub = new PubSub()
 
-const context = { lifts, trails, pubsub }
+// an object to be shared by all resolvers
+const context = { lifts, trails, pubsub } 
 
 const typeDefs = `
     type Lift {
@@ -110,25 +113,28 @@ const resolvers = {
       pubsub.publish('trail-status-change', { trailStatusChange: updatedTrail })
       return updatedTrail
     }
-  },
-  Lift: {
-    trailAccess: (root, args, { trails }) => root.trails
-    .map(id => trails.find(t => id === t.id))
-    .filter(x => x)
-  },
-  Trail: {
-    accessedByLifts: (root, args, { lifts }) => root.lift
-    .map(id => lifts.find(l => id === l.id))
-    .filter(x => x)
   }
 }
+
+const app = express()
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context
+  context,
+  tracing: true,
+  cacheControl: true
 })
 
-server.listen().then(({ url }) => {
-  console.log(`Server running at ${url}`)
+server.applyMiddleware({ app })
+const engine = new ApolloEngine({
+  apiKey: 'service:graphql-example:p8fGH6X80A7eKbKZ6pUWGQ'
 })
+
+const port = 4000
+
+engine.listen({
+  port,
+  expressApp: app,
+  graphqlPaths: ['/graphql']
+}, () => console.log(`Listening on port ${port}!`))
